@@ -49,3 +49,24 @@ Env Vars can be set to persis in Gitpod by storing them in the Gitpod Secrets St
 ```sh
 gp env HELLO='world'
 ```
+
+### AWS CLI Installation
+
+AWS CLI is installed for this project via the bash script []`./bin/install_aws_cli`](./bin/install_aws_cli)
+
+[Getting Started Install (AWS CLI)](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+[AWS CLI Env Vars](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
+
+Can check if AWS Credentials are configured correctly by running the following AWS CLI command:
+```sh
+aws sts get-caller-identity
+```
+
+If successful, a json payload is returned that looks similar to the below:
+```json
+{
+    "UserId": "AIDAQJXN6KVLTQNABC123",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam:123456789012:user/terraform-beginner-bootcamp"
+}
+```
