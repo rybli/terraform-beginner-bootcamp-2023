@@ -6,7 +6,7 @@
 - [Install Terraform CLI](#install-terraform-cli)
     - [Terraform CLI Change Considerations](#terraform-cli-change-considerations)
     - [Refactoring into Bash Scripts](#refactoring-into-bash-scripts)
-    - [Working with Environment Variables (Env Vars](#working-with-environment-variables-env-vars)
+    - [Working with Environment Variables (Env Vars)](#working-with-environment-variables-env-vars)
         - [Setting/Unsetting Env Vars](#settingunsetting-env-vars)
         - [Persisting Env Vars in Gitpod](#persisting-env-vars-in-gitpod)
     - [AWS CLI Installation](#aws-cli-installation)
