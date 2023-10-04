@@ -69,3 +69,44 @@ If the Terraform state file is lost, most likely all cloud infrastructure will n
 ### Fix Manual Configuration
 
 If a cloud resource is removed or modified manually, running `terraform plan` will attempt to put infrastructure back in the expected state fixing any configuration drift.
+
+### Fix Using Terraform Refresh
+
+```sh
+terraform apply -refresh-only -auto-approve
+```
+
+## Terraform Modules
+
+### Terraform Module Structure
+
+It is recommended to place modules in a `modules` directory when locally developing modules.
+
+### Passing Input Variables
+
+Can pass input variables to modules.
+
+The modules has to declare terraform variables in its own `variables.tf`
+
+```tf
+module "terrahouse_aws" {
+    source = "./modules/terrahouse_aws"
+    user_uuid = var.user_uuid
+    bucket_name = var.bucket_name
+}
+```
+
+### Modules Sources
+
+Using the source we can import the module form vairs places:
+- locally
+- Github
+- Terraform Registry
+
+```tf
+module "terrahouse_aws" {
+    source = "./modules/terrahouse_aws"
+}
+```
+
+[Module Sources](https://developer.hashicorp.com/terraform/language/modules/sources)
