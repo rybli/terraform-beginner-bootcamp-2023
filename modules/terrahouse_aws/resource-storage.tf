@@ -37,7 +37,7 @@ resource "aws_s3_object" "upload_assets" {
   for_each = fileset(var.assets_path, "*.{jpg, png, gif}")
   bucket = aws_s3_bucket.website_bucket.bucket
   key = "assets/${each.key}"
-  source = "${var.assets_path}/${each.key}"
+  source = "${var.assets_path}${each.key}"
   etag = filemd5("${var.assets_path}${each.key}")
 
   lifecycle {
