@@ -3,22 +3,51 @@ require 'json'
 require 'pry'
 require 'active_model'
 
+# Emulate/mock having a state or database for this development server
+# by setting a global variable. Don't set a global varialbe in production.
 $home = {}
 
+# Ruby class that includes validation from ActiveRecord.
+# Represents Home resource as a ruby object.
 class Home
+  # ActiveModel is part of Ruby on Rails
+  # used as on ORM. Has a module within ActiveModel that provides validations.
+  # Production Terratowns server is Ruby on Rails and used similar/identical validation.
+  # https://guides.rubyonrails.org/active_model_basics.html
+  # https://guides.rubyonrails.org/active_record_validations.html
   include ActiveModel::Validations
+
+  # Create virtual attributes to be stored on this object
+  # Sets getter and setter
+  # eg.
+  # home = new Home()
+  # home.town = 'hello' # setter
+  # home.town() # getter
   attr_accessor :town, :name, :description, :domain_name, :content_version
 
-  validates :town, presence: true
+  validates :town, presence: true, inclusion: { in: [
+    'melomaniac-mainsion',
+    'cooker-cover',
+    'video-valley',
+    'the-nomad-pad',
+    'gamers-grotto'
+  ]}
+  # visible to all users
   validates :name, presence: true
+  # visible to all users
   validates :description, presence: true
+  # want to lock this down to only be from cloudfront
   validates :domain_name, 
     format: { with: /\.cloudfront\.net\z/, message: "domain must be from .cloudfront.net" }
     # uniqueness: true, 
 
+    # content version has to be an int
+    # make sure incremental verion in controller
   validates :content_version, numericality: { only_integer: true }
 end
 
+# Extending a class from Sinatra::Base
+# Turns generic class to utilize sinatra web framework
 class TerraTownsMockServer < Sinatra::Base
 
   def error code, message
@@ -185,4 +214,5 @@ class TerraTownsMockServer < Sinatra::Base
   end
 end
 
+# This runs the server
 TerraTownsMockServer.run!
