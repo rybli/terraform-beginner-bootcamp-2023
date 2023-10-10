@@ -68,29 +68,38 @@ class TerraTownsMockServer < Sinatra::Base
     end
   end
 
+  # Return a hardcoded access token
   def x_access_code
-    '9b49b3fb-b8e9-483c-b703-97ba88eef8e0'
+    return '9b49b3fb-b8e9-483c-b703-97ba88eef8e0'
   end
 
   def x_user_uuid
-    'e328f4ab-b99f-421c-84c9-4ccea042c7d1'
+    return 'e328f4ab-b99f-421c-84c9-4ccea042c7d1'
   end
 
   def find_user_by_bearer_token
+    # https://swagger.io/docs/specification/authentication/bearer-authentication/
     auth_header = request.env["HTTP_AUTHORIZATION"]
+    # Check if Authorization header exists
     if auth_header.nil? || !auth_header.start_with?("Bearer ")
       error 401, "a1000 Failed to authenicate, bearer token invalid and/or teacherseat_user_uuid invalid"
     end
 
+    # Does the token match the one in the database?
+    # If not found or does not match, return error.
+    # code = access_code = token
     code = auth_header.split("Bearer ")[1]
     if code != x_access_code
       error 401, "a1001 Failed to authenicate, bearer token invalid and/or teacherseat_user_uuid invalid"
     end
 
+    # Was there a user_uuid in the body payload json?
     if params['user_uuid'].nil?
       error 401, "a1002 Failed to authenicate, bearer token invalid and/or teacherseat_user_uuid invalid"
     end
 
+    # The code and user_uuid should be mathing for the user
+    # in rails: User.find_by access_code: code, user_uuid: user_uuid
     unless code == x_access_code && params['user_uuid'] == x_user_uuid
       error 401, "a1003 Failed to authenicate, bearer token invalid and/or teacherseat_user_uuid invalid"
     end
@@ -100,27 +109,33 @@ class TerraTownsMockServer < Sinatra::Base
   post '/api/u/:user_uuid/homes' do
     ensure_correct_headings
     find_user_by_bearer_token
+    # puts will print to the terminal
     puts "# create - POST /api/homes"
 
+    # A begin/rescue is a try/catch, if and error occurs, rescue it.
     begin
+      # Sinatra does not automatically parse json bodys as params like rails
+      # Manually parse it
       payload = JSON.parse(request.body.read)
     rescue JSON::ParserError
       halt 422, "Malformed JSON"
     end
 
-    # Validate payload data
+    # Assign the payload to variables for ease of use
     name = payload["name"]
     description = payload["description"]
     domain_name = payload["domain_name"]
     content_version = payload["content_version"]
     town = payload["town"]
 
+    # Printing out variables to console for ease of debugging
     puts "name #{name}"
     puts "description #{description}"
     puts "domain_name #{domain_name}"
     puts "content_version #{content_version}"
     puts "town #{town}"
 
+    # Creating new Home model and set attributes
     home = Home.new
     home.town = town
     home.name = name
@@ -128,12 +143,15 @@ class TerraTownsMockServer < Sinatra::Base
     home.domain_name = domain_name
     home.content_version = content_version
     
+    # Ensure validation checks pass, otherwise error back json errors
     unless home.valid?
       error 422, home.errors.messages.to_json
     end
 
+    # Generate random uuid
     uuid = SecureRandom.uuid
     puts "uuid #{uuid}"
+    # Mock save data to mock database, global variable
     $home = {
       uuid: uuid,
       name: name,
@@ -143,6 +161,7 @@ class TerraTownsMockServer < Sinatra::Base
       content_version: content_version
     }
 
+    # Return uuid
     return { uuid: uuid }.to_json
   end
 
@@ -155,6 +174,7 @@ class TerraTownsMockServer < Sinatra::Base
     # checks for house limit
 
     content_type :json
+    # Does the uuid for the Home match the one in mock database?
     if params[:uuid] == $home[:uuid]
       return $home.to_json
     else
@@ -163,6 +183,7 @@ class TerraTownsMockServer < Sinatra::Base
   end
 
   # UPDATE
+  # Very similar to CREATE action
   put '/api/u/:user_uuid/homes/:uuid' do
     ensure_correct_headings
     find_user_by_bearer_token
@@ -209,6 +230,7 @@ class TerraTownsMockServer < Sinatra::Base
       error 404, "failed to find home with provided uuid and bearer token"
     end
 
+    # Delete from mock database
     $home = {}
     { message: "House deleted successfully" }.to_json
   end
