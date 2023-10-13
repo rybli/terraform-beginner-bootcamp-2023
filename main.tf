@@ -28,7 +28,6 @@ provider "terratowns" {
 #     index_html_filepath = var.index_html_filepath
 #     content_version = var.content_version
 #     assets_path = var.assets_path
-# }
 
 resource "terratowns_home" "home" {
   name = "Reasons to Watch Cowboy Bebop"
