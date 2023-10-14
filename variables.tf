@@ -10,22 +10,16 @@ variable "terratowns_endpoint" {
     type = string
 }
 
-variable "bucket_name" {
-    type = string
+variable "cowboy_bebop" {
+  type = object({
+    public_path = string
+    content_version = number
+  })
 }
 
-variable "index_html_filepath" {
-    type = string
-}
-
-variable "error_html_filepath" {
-    type = string
-}
-
-variable "content_version" {
-  type = number
-}
-
-variable "assets_path" {
-  type = string
+variable "chicken_bog" {
+  type = object({
+    public_path = string
+    content_version = number
+  })
 }
